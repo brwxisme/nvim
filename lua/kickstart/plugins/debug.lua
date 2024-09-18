@@ -66,6 +66,21 @@ return {
         'delve',
       },
     }
+    dap.adapters.godot = {
+      type = 'server',
+      host = '127.0.0.1',
+      port = 6006,
+    }
+    dap.configurations.gdscript = {
+      {
+        type = 'godot',
+        request = 'launch',
+        name = 'Launc Scene',
+        project = '${workspaceFolder}',
+        launch_scene= true,
+      },
+    }
+    vim.keymap.set('n', '<F5>', dap.continue, {desc = 'Debug: Start/Continue'})
 
     -- Dap UI setup
     -- For more information, see |:help nvim-dap-ui|
