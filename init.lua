@@ -88,6 +88,8 @@ P.S. You can delete this when you're done too. It's your config now! :)
 vim.o.expandtab = false
 vim.o.tabstop = 4
 vim.o.shiftwidth = 0
+vim.o.pumheight = 10
+vim.o.pumblend = 25
 
 -- Set <space> as the leader key
 -- See `:help mapleader`
@@ -302,6 +304,7 @@ require('lazy').setup({
         vim.keymap.set("n", "<A-2>", function() harpoon:list():select(2) end)
         vim.keymap.set("n", "<A-3>", function() harpoon:list():select(3) end)
         vim.keymap.set("n", "<A-4>", function() harpoon:list():select(4) end)
+        vim.keymap.set("n", "<A-5>", function() harpoon:list():select(5) end)
 
         -- Toggle previous & next buffers stored within Harpoon list
         vim.keymap.set("n", "<C-S-P>", function() harpoon:list():prev() end)
@@ -685,6 +688,7 @@ require('lazy').setup({
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
+        'gdtoolkit',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -774,7 +778,7 @@ require('lazy').setup({
           -- },
         },
       },
-      'saadparwaiz1/cmp_luasnip',
+--       'saadparwaiz1/cmp_luasnip',
 
       -- Adds other completion capabilities.
       --  nvim-cmp does not ship with all sources by default. They are split
@@ -855,13 +859,15 @@ require('lazy').setup({
             group_index = 0,
           },
           { name = 'nvim_lsp' },
+          { name = 'nvim_lsp_signature_help'},
           { name = 'luasnip' },
           { name = 'path' },
         },
       }
     end,
   },
-
+  { "ellisonleao/gruvbox.nvim", priority = 1000 , config = true, opts = ...},
+  { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
   { -- You can easily change to a different colorscheme.
     -- Change the name of the colorscheme plugin below, and then
     -- change the command in the config to whatever the name of that colorscheme is.
