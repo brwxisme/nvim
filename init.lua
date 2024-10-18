@@ -84,12 +84,12 @@ I hope you enjoy your Neovim journey,
 P.S. You can delete this when you're done too. It's your config now! :)
 --]]
 
-
 vim.o.expandtab = false
 vim.o.tabstop = 4
 vim.o.shiftwidth = 0
 vim.o.pumheight = 10
 vim.o.pumblend = 25
+vim.o.scrolloff = 25
 
 -- Set <space> as the leader key
 -- See `:help mapleader`
@@ -109,7 +109,7 @@ vim.g.have_nerd_font = true
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -162,7 +162,7 @@ vim.opt.inccommand = 'split'
 vim.opt.cursorline = true
 
 -- Minimal number of screen lines to keep above and below the cursor.
-vim.opt.scrolloff = 10
+-- vim.opt.scrolloff = 10
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
@@ -223,10 +223,10 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
-local gdproject = io.open(vim.fn.getcwd()..'/project.godot', 'r')
+local gdproject = io.open(vim.fn.getcwd() .. '/project.godot', 'r')
 if gdproject then
-    io.close(gdproject)
-    vim.fn.serverstart './godothost'
+  io.close(gdproject)
+  vim.fn.serverstart './godothost'
 end
 
 -- [[ Configure and install plugins ]]
@@ -283,34 +283,150 @@ require('lazy').setup({
   -- Then, because we use the `config` key, the configuration only runs
   -- after the plugin has been loaded:
   --  config = function() ... end
-    {
-    "ThePrimeagen/harpoon",
-    branch = "harpoon2",
+  --  BRWXISME STARTS HERE
+  {
+    'nvimdev/dashboard-nvim',
+    lazy = false, -- As https://github.com/nvimdev/dashboard-nvim/pull/450, dashboard-nvim shouldn't be lazy-loaded to properly handle stdin.
+    opts = function()
+      --       local logo = [[
+      -- ▐▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▌
+      -- ▐                                                                          ▌
+      -- ▐     ▄▄▄▄    ██▀███   █     █░▒██   ██▒ ██▓  ██████  ███▄ ▄███▓▓█████     ▌
+      -- ▐    ▓█████▄ ▓██ ▒ ██▒▓█░ █ ░█░▒▒ █ █ ▒░▓██▒▒██    ▒ ▓██▒▀█▀ ██▒▓█   ▀     ▌
+      -- ▐    ▒██▒ ▄██▓██ ░▄█ ▒▒█░ █ ░█ ░░  █   ░▒██▒░ ▓██▄   ▓██    ▓██░▒███       ▌
+      -- ▐    ▒██░█▀  ▒██▀▀█▄  ░█░ █ ░█  ░ █ █ ▒ ░██░  ▒   ██▒▒██    ▒██ ▒▓█  ▄     ▌
+      -- ▐    ░▓█  ▀█▓░██▓ ▒██▒░░██▒██▓ ▒██▒ ▒██▒░██░▒██████▒▒▒██▒   ░██▒░▒████▒    ▌
+      -- ▐    ░▒▓███▀▒░ ▒▓ ░▒▓░░ ▓░▒ ▒  ▒▒ ░ ░▓ ░░▓  ▒ ▒▓▒ ▒ ░░ ▒░   ░  ░░░ ▒░ ░    ▌
+      -- ▐    ▒░▒   ░   ░▒ ░ ▒░  ▒ ░ ░  ░░   ░▒ ░ ▒ ░░ ░▒  ░ ░░  ░      ░ ░ ░  ░    ▌
+      -- ▐     ░    ░   ░░   ░   ░   ░   ░    ░   ▒ ░░  ░  ░  ░      ░      ░       ▌
+      -- ▐     ░         ░         ░     ░    ░   ░        ░         ░      ░  ░    ▌
+      -- ▐          ░                                                               ▌
+      -- ▐                                                                          ▌
+      -- ▐                      not a cracker group btw                             ▌
+      -- ▐▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▌
+      --       ]]
+      local logo = [[
+
+ _____                                                                                              _____ 
+( ___ )                                                                                            ( ___ )
+ |   |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|   | 
+ |   |                                                                                              |   | 
+ |   |     ███████\  ███████\  ██\      ██\ ██\   ██\ ██████\  ██████\  ██\      ██\ ████████\      |   | 
+ |   |     ██  __██\ ██  __██\ ██ | █\  ██ |██ |  ██ |\_██  _|██  __██\ ███\    ███ |██  _____|     |   | 
+ |   |     ██ |  ██ |██ |  ██ |██ |███\ ██ |\██\ ██  |  ██ |  ██ /  \__|████\  ████ |██ |           |   | 
+ |   |     ███████\ |███████  |██ ██ ██\██ | \████  /   ██ |  \██████\  ██\██\██ ██ |█████\         |   | 
+ |   |     ██  __██\ ██  __██< ████  _████ | ██  ██<    ██ |   \____██\ ██ \███  ██ |██  __|        |   | 
+ |   |     ██ |  ██ |██ |  ██ |███  / \███ |██  /\██\   ██ |  ██\   ██ |██ |\█  /██ |██ |           |   | 
+ |   |     ███████  |██ |  ██ |██  /   \██ |██ /  ██ |██████\ \██████  |██ | \_/ ██ |████████\      |   | 
+ |   |     \_______/ \__|  \__|\__/     \__|\__|  \__|\______| \______/ \__|     \__|\________|     |   | 
+ |   |                                                                                              |   | 
+ |___|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|___| 
+(_____)                                                                                            (_____)
+
+
+      ]]
+      logo = string.rep('\n', 8) .. logo .. '\n\n'
+
+      local opts = {
+        theme = 'hyper',
+        shortcut_type = 'number',
+        config = {
+          header = vim.split(logo, '\n'),
+          shortcut = {
+            { action = 'ene | startinsert', desc = ' New File ', key = 'n' },
+            { action = 'Telescope oldfiles', desc = ' Recent Files ', key = 'r', group = 'DiagnosticHint' },
+          },
+          project = { enable = true, limit = 5, icon = '', label = ' Recent Projects', action = 'Telescope find_files cwd=' },
+          mru = { limit = 5, icon = '󰈔', label = ' Recent Files', cwd_only = false, group = 'DashboardMruTitle' },
+
+        -- stylua: ignore
+        center = {
+        },
+          footer = { '', '', '', '', '', '🚀 Some Good Motivational Quotes From Random Famous Guy That I Dont Give A Fuck About 🚀' },
+        },
+      }
+      --
+      -- for _, button in ipairs(opts.config.center) do
+      --   button.desc = button.desc .. string.rep(' ', 43 - #button.desc)
+      --   button.key_format = '  %s'
+      -- end
+      --
+      -- -- open dashboard after closing lazy
+      -- if vim.o.filetype == 'lazy' then
+      --   vim.api.nvim_create_autocmd('WinClosed', {
+      --     pattern = tostring(vim.api.nvim_get_current_win()),
+      --     once = true,
+      --     callback = function()
+      --       vim.schedule(function()
+      --         vim.api.nvim_exec_autocmds('UIEnter', { group = 'dashboard' })
+      --       end)
+      --     end,
+      --   })
+      -- end
+
+      return opts
+    end,
+  },
+  {
+    'eldritch-theme/eldritch.nvim',
+    lazy = false,
+    priority = 1000,
+    opts = {
+      dim_inactive = true,
+      transparent = true,
+    },
+  },
+  {
+    'Aasim-A/scrollEOF.nvim',
+    event = { 'CursorMoved', 'WinScrolled' },
+    opts = {},
+  },
+  {
+    'ThePrimeagen/harpoon',
+    branch = 'harpoon2',
     dependencies = {
-        "nvim-lua/plenary.nvim"
+      'nvim-lua/plenary.nvim',
     },
     config = function()
-        local harpoon = require("harpoon")
-        harpoon:setup({
-            settings = {
-                save_on_toggle = true,
-                sync_on_ui_close = true,
-            },
-        })
-        vim.keymap.set("n", "<leader>a", function() harpoon:list():append() end)
-        vim.keymap.set("n", "<C-e>", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
+      local harpoon = require 'harpoon'
+      harpoon:setup {
+        settings = {
+          save_on_toggle = true,
+          sync_on_ui_close = true,
+        },
+      }
+      vim.keymap.set('n', '<leader>a', function()
+        harpoon:list():append()
+      end)
+      vim.keymap.set('n', '<C-e>', function()
+        harpoon.ui:toggle_quick_menu(harpoon:list())
+      end)
 
-        vim.keymap.set("n", "<A-1>", function() harpoon:list():select(1) end)
-        vim.keymap.set("n", "<A-2>", function() harpoon:list():select(2) end)
-        vim.keymap.set("n", "<A-3>", function() harpoon:list():select(3) end)
-        vim.keymap.set("n", "<A-4>", function() harpoon:list():select(4) end)
-        vim.keymap.set("n", "<A-5>", function() harpoon:list():select(5) end)
+      vim.keymap.set('n', '<A-1>', function()
+        harpoon:list():select(1)
+      end)
+      vim.keymap.set('n', '<A-2>', function()
+        harpoon:list():select(2)
+      end)
+      vim.keymap.set('n', '<A-3>', function()
+        harpoon:list():select(3)
+      end)
+      vim.keymap.set('n', '<A-4>', function()
+        harpoon:list():select(4)
+      end)
+      vim.keymap.set('n', '<A-5>', function()
+        harpoon:list():select(5)
+      end)
 
-        -- Toggle previous & next buffers stored within Harpoon list
-        vim.keymap.set("n", "<C-S-P>", function() harpoon:list():prev() end)
-        vim.keymap.set("n", "<C-S-N>", function() harpoon:list():next() end)
+      -- Toggle previous & next buffers stored within Harpoon list
+      vim.keymap.set('n', '<C-S-P>', function()
+        harpoon:list():prev()
+      end)
+      vim.keymap.set('n', '<C-S-N>', function()
+        harpoon:list():next()
+      end)
     end,
-},
+  },
   { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
@@ -735,12 +851,13 @@ require('lazy').setup({
           lsp_format_opt = 'fallback'
         end
         return {
-          timeout_ms = 500,
+          timeout_ms = 1500,
           lsp_format = lsp_format_opt,
         }
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
+        gdscript = { 'gdformat' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
@@ -778,7 +895,7 @@ require('lazy').setup({
           -- },
         },
       },
---       'saadparwaiz1/cmp_luasnip',
+      --       'saadparwaiz1/cmp_luasnip',
 
       -- Adds other completion capabilities.
       --  nvim-cmp does not ship with all sources by default. They are split
@@ -859,15 +976,18 @@ require('lazy').setup({
             group_index = 0,
           },
           { name = 'nvim_lsp' },
-          { name = 'nvim_lsp_signature_help'},
+          { name = 'nvim_lsp_signature_help' },
           { name = 'luasnip' },
           { name = 'path' },
         },
       }
     end,
   },
-  { "ellisonleao/gruvbox.nvim", priority = 1000 , config = true, opts = ...},
-  { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
+  { 'ellisonleao/gruvbox.nvim', priority = 1000, config = true, opts = ... },
+  { 'catppuccin/nvim', name = 'catppuccin', priority = 1000 },
+  { 'rose-pine/neovim', name = 'rose-pine' },
+  { 'rebelot/kanagawa.nvim', name = 'kanagawa' },
+
   { -- You can easily change to a different colorscheme.
     -- Change the name of the colorscheme plugin below, and then
     -- change the command in the config to whatever the name of that colorscheme is.
@@ -879,7 +999,7 @@ require('lazy').setup({
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'gruvbox'
+      vim.cmd.colorscheme 'eldritch'
 
       -- You can configure highlights by doing something like:
       vim.cmd.hi 'Comment gui=none'
@@ -932,7 +1052,22 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'gdscript','godot_resource','gdshader','bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = {
+        'gdscript',
+        'godot_resource',
+        'gdshader',
+        'bash',
+        'c',
+        'diff',
+        'html',
+        'lua',
+        'luadoc',
+        'markdown',
+        'markdown_inline',
+        'query',
+        'vim',
+        'vimdoc',
+      },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -951,7 +1086,7 @@ require('lazy').setup({
     --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
     --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
   },
-  {'habamax/vim-godot', event = 'VimEnter'},
+  --   {'habamax/vim-godot', event = 'VimEnter'},
 
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
